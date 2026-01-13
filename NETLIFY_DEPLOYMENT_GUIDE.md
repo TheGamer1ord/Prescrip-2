@@ -18,7 +18,7 @@ This guide will help you deploy the frontend to Netlify.
 In the build settings, configure:
 - **Base directory:** `frontend`
 - **Build command:** `npm install && npm run build`
-- **Publish directory:** `frontend/dist`
+- **Publish directory:** `dist` (relative to base directory)
 
 ### Step 3: Set Environment Variables
 1. Go to **Site settings** → **Environment variables**
