@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="bn">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>এমবেডেড গুগল ম্যাপ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="maps.css">
+    <style>
+      body, * { font-family: 'Noto Sans Bengali', 'Arial Unicode MS', sans-serif; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <h1 class="title">এমবেডেড গুগল ম্যাপ</h1>
+        <p class="subtitle">একটি স্থান টাইপ করুন বা একটি অবস্থান পেস্ট করুন। মানচিত্র অবিলম্বে আপডেট হবে।</p>
+      </header>
+
+      <section class="controls" aria-label="মানচিত্র নিয়ন্ত্রণ">
+        <form id="map-form" class="form" autocomplete="off">
+          <input id="place-input" class="input" type="text" placeholder="উদাহরণ: আইফেল টাওয়ার, প্যারিস" aria-label="স্থান বা ঠিকানা">
+          <select id="zoom-input" class="select" aria-label="জুম স্তর">
+            <option value="8">জুম ৮</option>
+            <option value="10">জুম ১০</option>
+            <option value="12" selected>জুম ১২</option>
+            <option value="14">জুম ১৪</option>
+            <option value="16">জুম ১৬</option>
+            <option value="18">জুম ১৮</option>
+          </select>
+          <button class="btn" id="btn-update" type="submit">মানচিত্র আপডেট করুন</button>
+          <button class="btn btn--secondary" id="btn-current" type="button">আমার অবস্থান ব্যবহার করুন</button>
+        </form>
+        <div class="help">পরামর্শ: আপনি একটি সম্পূর্ণ গুগল ম্যাপস URLও পেস্ট করতে পারেন; আমরা প্রশ্নটি বের করব।</div>
+      </section>
+
+      <main class="content">
+        <div class="map-wrap">
+          <iframe id="map-frame" class="map" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Eiffel%20Tower%2C%20Paris&z=12&output=embed"></iframe>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <button class="btn" id="btn-copy">এমবেড লিংক কপি করুন</button>
+        <span id="copy-status" class="copy-status" role="status" aria-live="polite"></span>
+      </footer>
+    </div>
+
+    <script>
+      (function () {
+        const frame = document.getElementById('map-frame');
+        const form = document.getElementById('map-form');
+        const placeInput = document.getElementById('place-input');
+        const zoomInput = document.getElementById('zoom-input');
+        const btnCurrent = document.getElementById('btn-current');
+        const btnCopy = document.getElementById('btn-copy');
+        const copyStatus = document.getElementById('copy-status');
+
+        function toEmbedUrl(rawQuery, zoom) {
+          // Accept pasted Google Maps URLs or plain text. Try to extract q= from URL, else use raw text.
+          try {
+            const u = new URL(rawQuery);
+            const q = u.searchParams.get('q') || u.searchParams.get('query') || rawQuery;
+            return `https://www.google.com/maps?q=${encodeURIComponent(q)}&z=${zoom}&output=embed`;
+          } catch (_) {
+            return `https://www.google.com/maps?q=${encodeURIComponent(rawQuery)}&z=${zoom}&output=embed`;
+          }
+        }
+
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          const q = placeInput.value.trim();
+          if (!q) return;
+          frame.src = toEmbedUrl(q, zoomInput.value);
+        });
+
+        btnCurrent.addEventListener('click', function () {
+          if (!navigator.geolocation) return alert('এই ব্রাউজারে জিওলোকেশন সমর্থিত নয়।');
+          navigator.geolocation.getCurrentPosition(function (pos) {
+            const { latitude, longitude } = pos.coords;
+            const q = `${latitude},${longitude}`;
+            placeInput.value = q;
+            frame.src = toEmbedUrl(q, zoomInput.value);
+          }, function () {
+            alert('আপনার অবস্থান পাওয়া যায়নি।');
+          }, { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 });
+        });
+
+        btnCopy.addEventListener('click', async function () {
+          try {
+            await navigator.clipboard.writeText(frame.src);
+            copyStatus.textContent = 'কপি হয়েছে!';
+            setTimeout(() => copyStatus.textContent = '', 1500);
+          } catch (_) {
+            copyStatus.textContent = 'কপি ব্যর্থ হয়েছে';
+            setTimeout(() => copyStatus.textContent = '', 1500);
+          }
+        });
+      })();
+    </script>
+  </body>
+  </html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+</html>>

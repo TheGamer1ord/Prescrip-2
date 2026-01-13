@@ -1,0 +1,71 @@
+version: "3.8"
+
+services:
+    backend:
+        build:
+            context: .
+            dockerfile: docker/Dockerfile.backend.dev
+
+        env_file:
+            - ./backend/.env
+
+        # environment:
+        #     - NODE_ENV=development
+        #     - PORT=${PORT}
+        #     - MONGO_URI=${MONGO_URI}
+        #     - JWT_SECRET=${JWT_SECRET}
+
+        dns:
+            - 8.8.8.8
+            - 1.1.1.1
+
+        ports:
+            - "2222:2222"
+
+        volumes:
+            - ./backend/src:/home/node/backend/src
+            - /home/node/backend/node_modules
+
+        # --- Healthcheck ---
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:2222/api/health/live"]
+            interval: 30s
+            timeout: 5s
+            retries: 3
+            start_period: 10s
+
+    client:
+        container_name: client
+        build:
+            context: .
+            dockerfile: docker/Dockerfile.client.dev
+        environment:
+            - NODE_ENV=development
+            - VITE_API_URL=http://localhost:2222
+        ports:
+            - "5173:5173"
+        volumes:
+            - ./client:/home/node/client
+            - /home/node/client/node_modules
+        depends_on:
+            - backend
+    
+    prometheus:
+        image: prom/prometheus
+        container_name: prometheus
+        volumes:
+            - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+        command: 
+            - "--config.file=/etc/prometheus/prometheus.yml"
+        ports:
+            - "9090:9090"
+        depends_on:
+            - backend
+    
+    grafana:
+        image: grafana/grafana
+        container_name: grafana
+        ports:
+            - "3000:3000"
+        depends_on:
+            - prometheus

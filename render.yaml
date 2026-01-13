@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: prescrip-backend
+    env: node
+    region: oregon
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGO_URI
+        sync: false  # Set this manually in Render dashboard with your Atlas connection string
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SMTP_USER
+        value: user@example.com
+        sync: false
+      - key: SMTP_PASS
+        value: password
+        sync: false
+
+  - type: web
+    name: prescrip-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    plan: free
+    envVars:
+      - key: VITE_API_URL
+        value: https://prescrip-backend.onrender.com/api
+        sync: false  # Update this after backend is deployed with your actual backend URL
+

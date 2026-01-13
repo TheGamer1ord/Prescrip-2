@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@import 'tailwindcss';
+
+
+*{
+  font-family: Outfit;
+}
+.active hr {
+  @apply block;
+}
+
+::-webkit-scrollbar{
+  @apply hidden
+}
+
+/* Define primary color */
+.bg-primary {
+  background-color: #2563eb; /* blue-600 from Tailwind */
+}
+.text-primary {
+  color: #2563eb; /* blue-600 from Tailwind */
+}

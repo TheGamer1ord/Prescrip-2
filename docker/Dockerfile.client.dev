@@ -1,0 +1,33 @@
+# ============================
+# Stage 1 — Build static files
+# ============================
+FROM node:20 AS builder
+
+WORKDIR /app
+
+# Copy dependencies manifest
+COPY client/package*.json ./
+
+RUN npm ci
+
+# Copy all client source
+COPY client .
+
+# Build Vite project
+RUN npm run build
+
+
+# ============================
+# Stage 2 — Serve with Nginx
+# ============================
+FROM nginx:1.25-alpine
+
+# Remove default nginx html
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy built files from builder
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
