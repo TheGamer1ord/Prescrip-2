@@ -75,7 +75,7 @@ const Login = () => {
         // Login existing user
         const response = await apiClient.post('/auth/login', {
           email,
-          password
+          password,
         });
         
         // Store token and user data
