@@ -71,7 +71,7 @@ doctorUserSchema.methods.comparePassword = async function(candidatePassword) {
 };
 
 // Indexes
-doctorUserSchema.index({ email: 1 });
+// Note: email index is automatically created by unique: true
 doctorUserSchema.index({ doctorId: 1 });
 doctorUserSchema.index({ approved: 1, active: 1 });
 

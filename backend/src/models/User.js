@@ -111,7 +111,7 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 };
 
 // Indexes for performance
-userSchema.index({ email: 1 });
+// Note: email index is automatically created by unique: true
 userSchema.index({ active: 1 });
 userSchema.index({ approved: 1 });
 userSchema.index({ role: 1 });
